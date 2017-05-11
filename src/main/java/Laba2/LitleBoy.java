@@ -72,6 +72,11 @@ public class LitleBoy extends Person {
         super(Legs,Place,Name);
     }
 
+    public LitleBoy(Leg[] Legs,Location Place, String Name, Boolean IsCame, Boolean IsWait)throws ExceptionWrongName
+    {
+        super(Legs,Place,Name, IsCame, IsWait);
+    };
+
     public LitleBoy()
     {
         super();

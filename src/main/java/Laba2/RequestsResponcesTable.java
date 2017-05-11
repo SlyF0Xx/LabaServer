@@ -35,6 +35,8 @@ public class RequestsResponcesTable {
         AddRequest((byte)4, "EditPersons");
         AddRequest((byte)5, "AddPerson");
         AddRequest((byte)6, "DeletePerson");
+        AddRequest((byte)7, "GetCommandNames");
+        AddRequest((byte)8, "ExecuteCommand");
     }
 
     /*

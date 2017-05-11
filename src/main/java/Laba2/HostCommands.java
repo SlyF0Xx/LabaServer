@@ -1,5 +1,7 @@
 package Laba2;
 
+import Cmd.*;
+
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -9,6 +11,19 @@ import java.nio.ByteBuffer;
  */
 public class HostCommands {
     private static DatagramSocket serverSocket;
+
+    private static Commands commands;
+
+    static
+    {
+        commands = new Commands();
+        commands.SetCommand("add_if_min", new AddIfMin());
+        commands.SetCommand("remove_lower", new RemoveLower());
+        commands.SetCommand("remove_all", new RemoveAll());
+        commands.SetCommand("show_all", new ShowAll());
+        commands.SetCommand("save", new Save());
+        commands.SetCommand("load", new Load());
+    }
 
     public static void SetInetAddress()
     {
@@ -94,21 +109,47 @@ public class HostCommands {
                 {
                     String name = ReceiveString();
                     SendObject(People.GetByName(name));
+                    break;
                 }
                 case "GetPersons":
                 {
                     SendObject(People.GetPersons());
+                    break;
                 }
                 case "AddPerson":
                 {
                     People.AddPerson((Person) ReceiveObject());
+                    break;
                 }
                 case "DeletePerson":
                 {
-                    People.GetPersons().remove(ReceiveString());
+                    People.RemovePerson(ReceiveString());
+                    break;
+                }
+                case "GetCommandNames":
+                {
+                    SendObject(commands.GetCommands().keySet().toArray());
+                    break;
+                }
+                case "ExecuteCommand":
+                {
+                    String name = ReceiveString();
+                    String params = ReceiveString();
+                    try {
+                        SendObject(commands.GetCommands().get(name).execute(commands.GetCommands().get(name).read(params)));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                case "EditPerson":
+                {
+                    String name = ReceiveString();
+                    Person person = (Person) ReceiveObject();
+                    People.EditPerson(name, person);
                 }
             }
-
+            serverSocket.disconnect();
         }
     }
 
@@ -126,6 +167,11 @@ public class HostCommands {
             {
                 ByteBuffer tmp = ByteBuffer.allocate(4).putInt((Integer) object);
                 serverSocket.send(new DatagramPacket(tmp.array(), 4));
+            }
+            else if (object instanceof Boolean)
+            {
+                ByteBuffer tmp = ByteBuffer.allocate(1).put((byte)((Boolean)object==true?1:0));
+                serverSocket.send(new DatagramPacket(tmp.array(), 1));
             }
             else
             {

@@ -215,6 +215,36 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
         subscribers = new HashMap<String,Person>();
     }
 
+    public Person(Leg[] Legs,Location Place,String Name, Boolean IsCame, Boolean IsWait) throws ExceptionWrongName
+    {
+        if(Legs.length==1)
+        {
+            this.Legs = new Leg[1];
+            this.Legs = Legs;
+        }
+        else
+        {
+            this.Legs = new Leg[2];
+            this.Legs[0] = Legs[0];
+            this.Legs[1] = Legs[1];
+        }
+
+        Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+' '?[a-z,A-Z,А-Я,а-я]+");
+        //Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+\\s?[a-z,A-Z,А-Я,а-я]+");
+        Matcher m = p.matcher(Name);
+        if (m.find())
+        {
+            throw new ExceptionWrongName();
+        }
+        this.Name = Name;
+        this.Place = Place;
+        //subscribers = new HashMap<String,Person>();
+        subscribers = new HashMap<String,Person>();
+        Came = IsCame;
+        wait = IsWait;
+    }
+
+
     public Person()
     {
         Legs = new Leg[2];

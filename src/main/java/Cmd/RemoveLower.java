@@ -27,7 +27,8 @@ public class RemoveLower implements Command {
                 if(((String)set[i]).compareTo((String) objects[0])<0)
                 {
                     //TODO exception на пустую коллекцию
-                    People.GetPersons().remove(set[i]);
+                    People.RemovePerson((String) set[i]);
+                    //People.GetPersons().remove(set[i]);
                 }
             }
             return false;

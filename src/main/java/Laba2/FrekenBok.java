@@ -16,6 +16,12 @@ public class FrekenBok extends Person {
     {
         super(Legs,Place,Name);
     };
+
+    public FrekenBok(Leg[] Legs,Location Place, String Name, Boolean IsCame, Boolean IsWait)throws ExceptionWrongName
+    {
+        super(Legs,Place,Name, IsCame, IsWait);
+    };
+
     public FrekenBok()
     {
         super();

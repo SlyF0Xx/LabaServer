@@ -31,7 +31,7 @@ public class RemoveAll implements Command {
             {
                 if(People.GetPersons().get(set[i]).equals((Person)objects[0]))
                 {
-                    People.GetPersons().remove(set[i]);
+                    People.RemovePerson((String) set[i]);
                 }
             }
             return false;
