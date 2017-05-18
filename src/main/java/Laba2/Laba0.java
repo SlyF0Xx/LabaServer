@@ -31,7 +31,9 @@ public class Laba0
 
     public static void main(String[] args) {
         new RequestsResponcesTable();
-        HostCommands.SetInetAddress();
+
+        HostCommands main = new HostCommands();
+        main.SetInetAddress();
 
 
         Location Home = new Location("doors");
@@ -61,7 +63,7 @@ public class Laba0
 
             new Load().execute();
 
-            HostCommands.Observe();
+            main.Observe();
 
             people.GetByName("Mal").Waiting(people.GetByName("Freken Bok"));
             people.GetByName("Mal").SetWait(false);

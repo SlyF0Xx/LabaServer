@@ -12,7 +12,7 @@ public class People {
     //static volatile private Map<String, Person> persons;
     private static Connection con;
     private static Statement st;
-    public static Map<String, Person> GetPersons()
+    public static  Map<String, Person> GetPersons()
     {
         Map<String,Person> answer = new HashMap<String, Person>();
         try {
@@ -29,17 +29,22 @@ public class People {
                 Boolean IsCame = result.getBoolean(2);
                 Boolean IsWait = result.getBoolean(3);
 
-                sql = "SELECT * FROM leg WHERE owner='"  + name+ "';";
+                sql = "SELECT count(*) FROM leg WHERE owner='"  + name+ "';";
                 Statement st2 = con.createStatement();
                 ResultSet resultLeg = st2.executeQuery(sql);
 
-                List<Leg> tmpLegs = new LinkedList<Leg>();
-                while(resultLeg.next())
+                resultLeg.next();
+                Leg LegAr[] = new Leg[resultLeg.getInt(1)];
+
+                for(int i = 0; i<LegAr.length;i++)
                 {
-                    tmpLegs.add(new Leg(resultLeg.getBoolean(2),resultLeg.getBoolean(3), Leg.Size.valueOf(resultLeg.getString(4))));
+                    sql = "SELECT * FROM leg WHERE owner='"  + name+ "' AND index = '"+ i+"';";
+                    st2 = con.createStatement();
+                    resultLeg = st2.executeQuery(sql);
+                    resultLeg.next();
+                    LegAr[i] = new Leg(resultLeg.getBoolean(2),resultLeg.getBoolean(3), Leg.Size.valueOf(resultLeg.getString(4)));
                 }
-                Leg LegAr[] = new Leg[tmpLegs.size()];
-                LegAr = tmpLegs.toArray(LegAr);
+
                 resultLeg.close();
 
                 sql = "SELECT * FROM location WHERE name='"  + LocationPosition + "';";
@@ -155,12 +160,16 @@ public class People {
             sql = "SELECT * FROM leg WHERE owner ='"+name+"';";
             ResultSet result =  st.executeQuery(sql);
 
+            Statement st2 = con.createStatement();
+
             int i=0;
-            while(result.next())
+            //)
+            //TODO
+            while(result.next());
             {
                 sql = "UPDATE leg SET (iswashed, isbarefoot, legsize) = ("+newValue.GetLegs()[i].IsWashed()+", "+newValue.GetLegs()[i].IsBarefoot()+", '"+newValue.GetLegs()[i].GetSize()+"') " +
                         "WHERE (owner = '"+name+"') AND (index = "+i+");";
-                st.execute(sql);
+                st2.execute(sql);
                 i++;
             }
 

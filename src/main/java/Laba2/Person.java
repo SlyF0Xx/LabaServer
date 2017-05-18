@@ -190,17 +190,7 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
 
     public Person(Leg[] Legs,Location Place,String Name) throws ExceptionWrongName
     {
-        if(Legs.length==1)
-        {
-            this.Legs = new Leg[1];
-            this.Legs = Legs;
-        }
-        else
-        {
-            this.Legs = new Leg[2];
-            this.Legs[0] = Legs[0];
-            this.Legs[1] = Legs[1];
-        }
+        this.Legs = Legs;
 
         //Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+,' ',[a-z,A-Z,А-Я,а-я]+");
         Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+\\s?[a-z,A-Z,А-Я,а-я]+");

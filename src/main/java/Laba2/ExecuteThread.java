@@ -6,9 +6,6 @@ import java.net.SocketAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import static Laba2.HostCommands.ReceiveObject;
-import static Laba2.HostCommands.SendObject;
-
 /**
  * Created by SlyFox on 11.05.2017.
  */
@@ -16,12 +13,14 @@ public class ExecuteThread extends Thread {
     List<Object> params;
     SocketAddress address;
     String temp;
+    HostCommands main;
 
-    ExecuteThread(String temp, SocketAddress address)
+    ExecuteThread(String temp, SocketAddress address, HostCommands main)
     {
         params = new LinkedList<>();
         this.temp = temp;
         this.address = address;
+        this.main = main;
     }
 
 
@@ -41,7 +40,7 @@ public class ExecuteThread extends Thread {
 
     public void run()
     {
-        OutputThread outputThread = new OutputThread(temp,address);
+        OutputThread outputThread = new OutputThread(temp,address, main);
         switch (temp)
         {
             case "GetPerson":
@@ -57,11 +56,13 @@ public class ExecuteThread extends Thread {
             case "AddPerson":
             {
                 People.AddPerson((Person) params.get(0));
+                main.Announc();
                 break;
             }
             case "DeletePerson":
             {
                 People.RemovePerson((String) params.get(0));
+                main.Announc();
                 break;
             }
             case "GetCommandNames":
@@ -73,6 +74,7 @@ public class ExecuteThread extends Thread {
             {
                 try {
                     outputThread.out.add(commands.GetCommands().get(params.get(0)).execute(commands.GetCommands().get(params.get(0)).read((String) params.get(1))));
+                    main.Announc();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -81,6 +83,7 @@ public class ExecuteThread extends Thread {
             case "EditPerson":
             {
                 People.EditPerson((String) params.get(0), (Person) params.get(1));
+                main.Announc();
             }
         }
         outputThread.start();

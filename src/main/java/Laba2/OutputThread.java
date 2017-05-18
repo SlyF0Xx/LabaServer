@@ -5,7 +5,6 @@ import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static Laba2.HostCommands.SendObject;
 
 /**
  * Created by SlyFox on 12.05.2017.
@@ -14,12 +13,14 @@ public class OutputThread extends Thread {
     List<Object> out;
     String temp;
     SocketAddress address;
+    HostCommands main;
 
-    OutputThread(String temp, SocketAddress address)
+    OutputThread(String temp, SocketAddress address, HostCommands main)
     {
         out = new LinkedList<Object>();
         this.temp = temp;
         this.address = address;
+        this.main = main;
     }
 
     public void run()
@@ -30,23 +31,23 @@ public class OutputThread extends Thread {
             {
                 case "GetPerson":
                 {
-                    SendObject(out.get(0),address);
+                    main.SendObject(out.get(0),address);
                     break;
                 }
                 case "GetPersons":
                 {
-                    SendObject(out.get(0),address);
+                    main.SendObject(out.get(0),address);
                     break;
                 }
                 case "GetCommandNames":
                 {
-                    SendObject(out.get(0),address);
+                    main.SendObject(out.get(0),address);
                     break;
                 }
                 case "ExecuteCommand":
                 {
                     try {
-                        SendObject(out.get(0),address);
+                        main.SendObject(out.get(0),address);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
