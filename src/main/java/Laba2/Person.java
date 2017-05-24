@@ -5,6 +5,8 @@ package Laba2;
 
 import Exceptions.ExceptionWrongName;
 import IO.NotParse;
+import ORM.Atribute;
+import ORM.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,6 +20,7 @@ import java.util.regex.*;
 /**
  * @author SlyFox
  */
+@Entity(name = "Person")
 public abstract class Person  implements Waitable,Subscribable,Comparable, Serializable
 {
     /**
@@ -79,15 +82,15 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
     @JsonProperty("Legs")
     private Leg Legs[];
 
-    @JsonProperty("Place")
-    private Location Place;
-
+    @Atribute(name = "Name", type = "Text", isPrimaryKey = true)
     @JsonProperty("Name")
     private String Name;
 
+    @Atribute(name = "isCame", type = "Boolean")
     @JsonProperty("Came")
     private boolean Came;
 
+    @Atribute(name = "isWait", type = "Boolean")
     @JsonProperty("wait")
     private boolean wait;
 
@@ -99,6 +102,13 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
     @JsonIgnore
     private Map<String,Person> subscribers;
 
+    @NotParse
+    @Atribute(name = "ClassName", type = "TEXT")
+    private int zaglushka;
+
+    @Atribute(name = "Place", type = "TEXT", Reference = "Place")
+    @JsonProperty("Place")
+    private Location Place;
 
     public Person GetSubjectForSubscribing(){return SubjectForSubscribing;}
 

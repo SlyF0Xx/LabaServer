@@ -11,6 +11,8 @@ import Exceptions.ExceptionWrongName;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static Laba2.People.CreateDataTable;
+
 
 public class Laba0
 {
@@ -35,10 +37,13 @@ public class Laba0
         HostCommands main = new HostCommands();
         main.SetInetAddress();
 
-
         Location Home = new Location("doors");
 
         final People people = new People();
+
+        CreateDataTable(Location.class);
+        CreateDataTable(Person.class);
+        CreateDataTable(Leg.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

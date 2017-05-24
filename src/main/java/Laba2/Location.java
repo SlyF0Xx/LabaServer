@@ -3,10 +3,13 @@
  */
 package Laba2;
 
+import ORM.Atribute;
+import ORM.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+@Entity(name = "Place")
 public class Location implements Serializable {
 
 
@@ -34,7 +37,7 @@ public class Location implements Serializable {
 
 
 
-
+    @Atribute(name = "Position", type = "TEXT", isPrimaryKey = true)
     @JsonProperty("Position")
     private String Position;
 
