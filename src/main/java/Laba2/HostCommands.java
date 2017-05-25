@@ -38,8 +38,8 @@ public class HostCommands {
     public void SetInetAddress()
     {
         try {
-            serverSocket = new DatagramSocket(new InetSocketAddress(2222));
-            //serverSocket = new DatagramSocket(new InetSocketAddress("192.168.1.1", 2222));
+            //serverSocket = new DatagramSocket(new InetSocketAddress(2222));
+            serverSocket = new DatagramSocket(new InetSocketAddress("192.168.43.22", 2222));
             System.out.println("Сервер присоединился");
         } catch (SocketException e) {
             e.printStackTrace();
