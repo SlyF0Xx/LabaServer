@@ -17,7 +17,7 @@ import java.util.*;
 public class People {
     //static volatile private Map<String, Person> persons;
     private static Connection con;
-    private static Statement st;
+   // private static Statement st;
     public static  Map<String, Person> GetPersons()
     {
         Map<String,Person> answer = new HashMap<String, Person>();
@@ -25,7 +25,8 @@ public class People {
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             String sql = "SELECT * FROM person;";
-            ResultSet result = st.executeQuery(sql);
+            Statement stl = con.createStatement();
+            ResultSet result = stl.executeQuery(sql);
 
 
             while(result.next())
@@ -94,7 +95,8 @@ public class People {
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             String sql = "SELECT * FROM person;";
-            ResultSet result = st.executeQuery(sql);
+            Statement stl = con.createStatement();
+            ResultSet result = stl.executeQuery(sql);
 
 
             while(result.next())
@@ -179,11 +181,17 @@ public class People {
      */
     public static void AddPerson(Person person) {
         String sql;
+        Statement stl = null;
+        try {
+            stl = con.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
             sql = "INSERT INTO place VALUES ('"+person.GetPlace().GetPosition()+"');";
-            st.execute(sql);
+            stl.execute(sql);
             //return Person
         } catch (SQLException e) {
             e.printStackTrace();
@@ -191,7 +199,7 @@ public class People {
         try {
             sql = "INSERT INTO person VALUES ('" + person.GetName() +
                     "', " + person.IsCame() + ", " + person.IsWait() + ", '" + person.getClass().getName() + "', '" + person.GetPlace().GetPosition() + "');";
-            st.execute(sql);
+            stl.execute(sql);
 
             for(int i=0;i<person.GetLegCount();i++)
             {
@@ -201,7 +209,7 @@ public class People {
                         person.GetLegs()[i].GetSize() +"','"+
                         person.GetName()+"', "+
                         i+") ;";
-                st.execute(sql);
+                stl.execute(sql);
             }
         }
             catch (SQLException e) {
@@ -214,9 +222,9 @@ public class People {
         String sql;
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-
+            Statement stl = con.createStatement();
             sql = "DELETE FROM person WHERE name='"+name+"';";
-            st.execute(sql);
+            stl.execute(sql);
             //return Person
         } catch (SQLException e) {
             e.printStackTrace();
@@ -230,27 +238,28 @@ public class People {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
             sql = "SELECT position FROM place WHERE position ='"+newValue.GetPlace().GetPosition()+"';";
-            ResultSet result1 = st.executeQuery(sql);
+            Statement stl = con.createStatement();
+            ResultSet result1 = stl.executeQuery(sql);
 
             if(!result1.next())
             {
                 sql = "INSERT INTO place VALUES('"+newValue.GetPlace().GetPosition()+"');";
-                st.execute(sql);
+                stl.execute(sql);
             }
 
             sql = "UPDATE person SET (iscame, iswait, place) = ("+newValue.IsCame()+", "+newValue.IsWait()+", '"+newValue.GetPlace().GetPosition()+"') WHERE name = '"+name+"';";
-            st.execute(sql);
+            stl.execute(sql);
 
 
             sql = "SELECT * FROM legs WHERE owner ='"+name+"';";
-            ResultSet result =  st.executeQuery(sql);
+            ResultSet result =  stl.executeQuery(sql);
 
             Statement st2 = con.createStatement();
 
 
             int i=0;
 
-            while(result.next());
+            while(result.next())
             {
                 sql = "UPDATE legs SET (iswashed, isbarefoot, legsize) = ("+newValue.GetLegs()[i].IsWashed()+", "+newValue.GetLegs()[i].IsBarefoot()+", '"+newValue.GetLegs()[i].GetSize()+"') " +
                         "WHERE (owner = '"+name+"') AND (index = "+i+");";
@@ -260,6 +269,41 @@ public class People {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public static void CheckTables()
+    {
+        Statement stl = null;
+        try {
+            stl = con.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            String sql = "SELECT * FROM place;";
+            stl.execute(sql);
+        } catch (SQLException e) {
+            CreateDataTable(Location.class);
+        }
+
+        try {
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            String sql = "SELECT * FROM legs;";
+            stl.execute(sql);
+        } catch (SQLException e) {
+            CreateDataTable(Leg.class);
+        }
+
+        try {
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            String sql = "SELECT * FROM person;";
+            stl.execute(sql);
+        } catch (SQLException e) {
+            CreateDataTable(Person.class);
         }
     }
 
@@ -275,10 +319,17 @@ public class People {
      */
     public static Person GetByName(String name) {
         List<String> temp = new LinkedList<>();
+        Statement stl = null;
+        try {
+            stl = con.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             String sql = "SELECT * FROM person WHERE name='"  + name + "';";
-            ResultSet result = st.executeQuery(sql);
+            ResultSet result = stl.executeQuery(sql);
 
             String LocationPosition =result.getString(5);
             String ClassName = result.getString(4);
@@ -336,6 +387,13 @@ public class People {
 
     public static void CreateDataTable(Class target)
     {
+        Statement stl = null;
+        try {
+            stl = con.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         try {
             String sql;
             String atributes= "";
@@ -376,7 +434,7 @@ public class People {
                     " (" + atributes +
                     "PRIMARY KEY ( " + primaryKey +
                     ")  );";
-            st.execute(sql);
+            stl.execute(sql);
         } catch (SQLException e) {
             System.out.print("Не пытайся вставить лишнего!");
         }
@@ -388,7 +446,6 @@ public class People {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres" +
                     "", "postgres", "vbntkmigbkm1");
-            st = con.createStatement();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {

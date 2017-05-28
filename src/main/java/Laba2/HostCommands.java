@@ -38,8 +38,8 @@ public class HostCommands {
     public void SetInetAddress()
     {
         try {
-            //serverSocket = new DatagramSocket(new InetSocketAddress(2222));
-            serverSocket = new DatagramSocket(new InetSocketAddress("192.168.43.22", 2222));
+            serverSocket = new DatagramSocket(new InetSocketAddress("localhost", 2222));
+            //serverSocket = new DatagramSocket(new InetSocketAddress("192.168.43.22", 2222));
             System.out.println("Сервер присоединился");
         } catch (SocketException e) {
             e.printStackTrace();
@@ -104,7 +104,21 @@ public class HostCommands {
     {
         ByteBuffer tmp = ByteBuffer.allocate(1).put(RequestsResponcesTable.getResponceByName(name));
         try {
+            SocketAddress oldAddres =  serverSocket.getRemoteSocketAddress();
+
+            if(oldAddres!=null && !oldAddres.equals(address))
+            {
+                serverSocket.disconnect();
+            }
+
+            //serverSocket.connect(address);
             serverSocket.send(new DatagramPacket(tmp.array(), 1, address));
+
+            if(oldAddres!=null && !oldAddres.equals(address))
+            {
+                serverSocket.connect(oldAddres);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
