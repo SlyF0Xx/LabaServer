@@ -7,11 +7,12 @@ package Laba2;
 import Cmd.Load;
 import Cmd.Save;
 import Exceptions.ExceptionWrongName;
+import ORM.DataTable;
+import ORM.DataWraper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import static Laba2.People.CreateDataTable;
+import java.util.*;
 
 
 public class Laba0
@@ -40,10 +41,6 @@ public class Laba0
         Location Home = new Location("doors");
 
         final People people = new People();
-
-        CreateDataTable(Location.class);
-        CreateDataTable(Person.class);
-        CreateDataTable(Leg.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

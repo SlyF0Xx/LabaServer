@@ -14,6 +14,9 @@ import java.lang.annotation.Target;
 public @interface Atribute {
     public String name();
     public String type();
+    public Relation relation();
     boolean isPrimaryKey() default false;
+    //boolean isRecursiveOnUpdate() default false;
+    //boolean isRecursiveOnDelete() default false;
     String Reference() default "";
 }

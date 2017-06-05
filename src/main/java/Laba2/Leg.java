@@ -7,6 +7,7 @@ package Laba2;
 import IO.NotParse;
 import ORM.Atribute;
 import ORM.Entity;
+import ORM.Relation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -45,27 +46,17 @@ public class Leg implements Serializable {
         return (Washed?1:0) + (Barefoot?1:0) + LegSize.hashCode();
     }
 
-    @Atribute(name = "isWashed", type = "BOOLEAN")
+    @Atribute(name = "isWashed", type = "BOOLEAN", relation = Relation.Primitive)
     @JsonProperty("Washed")
     private boolean Washed;
 
-    @Atribute(name = "isBarefoot", type = "BOOLEAN")
+    @Atribute(name = "isBarefoot", type = "BOOLEAN", relation = Relation.Primitive)
     @JsonProperty("Barefoot")
     private boolean Barefoot;
 
-    @Atribute(name = "LegSize", type = "TEXT")
+    @Atribute(name = "LegSize", type = "TEXT", relation = Relation.Primitive)
     @JsonProperty("LegSize")
     private Size LegSize;
-
-
-    @NotParse
-    @Atribute(name = "Owner", type = "TEXT", Reference = "Person")
-    private int zaglushka1;
-    @NotParse
-    @Atribute(name = "Index", type = "int")
-    private int zaglushka2;
-
-
 
 
     public boolean IsWashed()

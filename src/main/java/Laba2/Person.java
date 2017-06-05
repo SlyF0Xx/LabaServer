@@ -7,6 +7,7 @@ import Exceptions.ExceptionWrongName;
 import IO.NotParse;
 import ORM.Atribute;
 import ORM.Entity;
+import ORM.Relation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -79,18 +80,19 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
         }
     }
 
+    @Atribute(name = "Laba2.Leg", type = "entity", relation = Relation.OneToMany)//, isRecursiveOnUpdate = true, isRecursiveOnDelete = true)
     @JsonProperty("Legs")
     private Leg Legs[];
 
-    @Atribute(name = "Name", type = "Text", isPrimaryKey = true)
+    @Atribute(name = "Name", type = "Text", isPrimaryKey = true, relation = Relation.Primitive)
     @JsonProperty("Name")
     private String Name;
 
-    @Atribute(name = "isCame", type = "Boolean")
+    @Atribute(name = "isCame", type = "Boolean", relation = Relation.Primitive)
     @JsonProperty("Came")
     private boolean Came;
 
-    @Atribute(name = "isWait", type = "Boolean")
+    @Atribute(name = "isWait", type = "Boolean", relation = Relation.Primitive)
     @JsonProperty("wait")
     private boolean wait;
 
@@ -103,10 +105,10 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
     private Map<String,Person> subscribers;
 
     @NotParse
-    @Atribute(name = "ClassName", type = "TEXT")
-    private int zaglushka;
+    @Atribute(name = "ClassName", type = "TEXT", relation = Relation.Primitive)
+    private String zaglushka;
 
-    @Atribute(name = "Place", type = "TEXT", Reference = "Place")
+    @Atribute(name = "Place", type = "Laba2.Location", Reference = "Place", relation = Relation.OneToOne) //, isRecursiveOnUpdate = true, isRecursiveOnDelete = true)
     @JsonProperty("Place")
     private Location Place;
 
@@ -200,10 +202,11 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
 
     public Person(Leg[] Legs,Location Place,String Name) throws ExceptionWrongName
     {
+        zaglushka = "";
         this.Legs = Legs;
 
-        //Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+,' ',[a-z,A-Z,А-Я,а-я]+");
-        Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+\\s?[a-z,A-Z,А-Я,а-я]+");
+        Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+,(' ',[a-z,A-Z,А-Я,а-я]+)?");
+        //Pattern p = Pattern.compile("[a-z,A-Z,А-Я,а-я]+\\s?[a-z,A-Z,А-Я,а-я]+");
         Matcher m = p.matcher(Name);
         if (m.find())
         {
@@ -217,6 +220,7 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
 
     public Person(Leg[] Legs,Location Place,String Name, Boolean IsCame, Boolean IsWait) throws ExceptionWrongName
     {
+        zaglushka = "";
         if(Legs.length==1)
         {
             this.Legs = new Leg[1];
@@ -247,6 +251,7 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
 
     public Person()
     {
+        zaglushka = "";
         Legs = new Leg[2];
         Legs[0] = new Leg();
         Legs[1] = new Leg();

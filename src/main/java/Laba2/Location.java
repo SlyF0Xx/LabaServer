@@ -5,6 +5,7 @@ package Laba2;
 
 import ORM.Atribute;
 import ORM.Entity;
+import ORM.Relation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -37,7 +38,7 @@ public class Location implements Serializable {
 
 
 
-    @Atribute(name = "Position", type = "TEXT", isPrimaryKey = true)
+    @Atribute(name = "Position", type = "TEXT", isPrimaryKey = true, relation = Relation.Primitive)
     @JsonProperty("Position")
     private String Position;
 
