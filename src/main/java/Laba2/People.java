@@ -148,10 +148,18 @@ public class People {
     {
         List<String> keys = new LinkedList<>();
         keys.add(name);
-        dataWraper.deleteRecrdTrans(FrekenBok.class, keys);
+        try {
+            dataWraper.getConnection().setAutoCommit(false);
 
-        dataWraper.deleteRecrdTrans(LitleBoy.class, keys);
-        dataWraper.addRecordTrans(newValue, dataWraper.tables.get(Person.class.getAnnotation(Entity.class).name()), null);
+            dataWraper.deleteRecrd(FrekenBok.class, keys);
+
+            dataWraper.deleteRecrd(LitleBoy.class, keys);
+            dataWraper.addRecord(newValue, dataWraper.tables.get(Person.class.getAnnotation(Entity.class).name()), null);
+            dataWraper.getConnection().commit();
+            dataWraper.getConnection().setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /*

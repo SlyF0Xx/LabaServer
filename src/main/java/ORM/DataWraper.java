@@ -19,6 +19,11 @@ public class DataWraper {
     private Connection con;
     public Map<String,DataTable> tables;
 
+    public Connection getConnection()
+    {
+        return con;
+    }
+
     private Map.Entry<String,String>  checkPrimaryKey(Field field){
         if((field.getAnnotation(Atribute.class)).isPrimaryKey()) {
             return new AbstractMap.SimpleEntry<String, String>((field.getAnnotation(Atribute.class)).name(),
@@ -351,6 +356,8 @@ public class DataWraper {
                                     ObjectOutputStream oos = new ObjectOutputStream(t);
                                     oos.writeObject(field.get(record));
 
+
+                                    //Такого костыля я ещё не писал
                                     Statement stat = con.createStatement();
                                     stat.execute("CREATE TABLE A( a bytea);");
                                     PreparedStatement st = con.prepareStatement("INSERT INTO A VALUES (?);");
@@ -364,8 +371,6 @@ public class DataWraper {
                                         bytesExt = resultSet.getString(1);
                                     }
                                     stat.execute("DROP TABLE A");
-                                    con.commit();
-
 
                                     values.add("'"+  bytesExt +"'");
                                     if((field.getAnnotation(Atribute.class)).isPrimaryKey()){
@@ -627,22 +632,33 @@ public class DataWraper {
 
                                     String refTableName = Class.forName(field.getAnnotation(Atribute.class).name()).getAnnotation(Entity.class).name();
 
-                                    sql = "SELECT "+ String.join(",", tables.get(refTableName).primaryKeys.keySet()) + " FROM " + refTableName +
+                                    String index = tableName +"_"+  tables.get(refTableName).name +"_index";
+                                    sql = "SELECT max(" + index + ") FROM " + refTableName + " WHERE "+ keysRef +" GROUP BY "+ String.join(",",primRefKeys) +";";
+                                    ResultSet reference = con.createStatement().executeQuery(sql);
+                                    reference.next();
+                                    Integer maxIndex = reference.getInt(1)+1;
+
+                                    sql = "SELECT "+ String.join(",", tables.get(refTableName).primaryKeys.keySet())+", "+ index + " FROM " + refTableName +
                                             " WHERE "+ keysRef +" ;";
 
-                                    ResultSet reference = con.createStatement().executeQuery(sql);
+                                    reference = con.createStatement().executeQuery(sql);
+
+                                    for(int j = 0;j<maxIndex;j++)
+                                    {
+                                        list.add(null);
+                                    }
 
                                     while(reference.next()){
                                         List<String> refPrimatyValue = new LinkedList<>();
+                                        ResultSet finalReference = reference;
                                         tables.get(refTableName).primaryKeys.forEach((key, value) -> {
                                             try {
-                                                refPrimatyValue.add(reference.getString(key));
+                                                refPrimatyValue.add(finalReference.getString(key));
                                             } catch (SQLException e) {
                                                 e.printStackTrace();
                                             }
                                         });
-
-                                        list.add(getRecord(Class.forName(field.getAnnotation(Atribute.class).name()), refPrimatyValue));
+                                        list.set(finalReference.getInt(index), getRecord(Class.forName(field.getAnnotation(Atribute.class).name()), refPrimatyValue));
                                     }
 
                                     if(field.getType().isArray()) {
