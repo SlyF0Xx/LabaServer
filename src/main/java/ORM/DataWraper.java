@@ -2,7 +2,10 @@ package ORM;
 
 import Laba2.Leg;
 
+import javax.sql.rowset.serial.SerialClob;
+import java.io.*;
 import java.lang.reflect.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.StringJoiner;
@@ -342,9 +345,38 @@ public class DataWraper {
                                 break;
                             }
                             case Primitive: {
-                                values.add("'"+field.get(record).toString()+"'");
-                                if((field.getAnnotation(Atribute.class)).isPrimaryKey()){
-                                    primaryValues.add("'"+field.get(record).toString()+"'");
+                                if((field.getAnnotation(Atribute.class)).type().equals("bytea")) {
+
+                                    ByteArrayOutputStream t = new ByteArrayOutputStream();
+                                    ObjectOutputStream oos = new ObjectOutputStream(t);
+                                    oos.writeObject(field.get(record));
+
+                                    Statement stat = con.createStatement();
+                                    stat.execute("CREATE TABLE A( a bytea);");
+                                    PreparedStatement st = con.prepareStatement("INSERT INTO A VALUES (?);");
+                                    con.setAutoCommit(false);
+                                    st.setBytes(1, t.toByteArray());
+                                    st.execute();
+                                    ResultSet resultSet = stat.executeQuery("SELECT * FROM A");
+                                    String bytesExt = "";
+                                    if(resultSet.next())
+                                    {
+                                        bytesExt = resultSet.getString(1);
+                                    }
+                                    stat.execute("DROP TABLE A");
+                                    con.commit();
+
+
+                                    values.add("'"+  bytesExt +"'");
+                                    if((field.getAnnotation(Atribute.class)).isPrimaryKey()){
+                                        primaryValues.add("B'"+ new String(t.toByteArray()) +"'");
+                                    }
+                                }
+                                else {
+                                    values.add("'"+field.get(record).toString()+"'");
+                                    if((field.getAnnotation(Atribute.class)).isPrimaryKey()){
+                                        primaryValues.add("'"+field.get(record).toString()+"'");
+                                    }
                                 }
                                 break;
                             }
@@ -468,6 +500,8 @@ public class DataWraper {
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -554,7 +588,15 @@ public class DataWraper {
                                                         data.getObject((field.getAnnotation(Atribute.class)).name()).toString()));
                                     }
                                     else{
-                                        field.set(object, data.getObject((field.getAnnotation(Atribute.class)).name()));
+                                        if((field.getAnnotation(Atribute.class)).type().equals("bytea")) {
+                                            byte[] bytes = data.getBytes((field.getAnnotation(Atribute.class)).name());
+                                            ByteArrayInputStream t = new ByteArrayInputStream(bytes);
+                                            ObjectInputStream oin = new ObjectInputStream(t);
+                                            field.set(object, oin.readObject());
+                                        }else
+                                        {
+                                            field.set(object, data.getObject((field.getAnnotation(Atribute.class)).name()));
+                                        }
                                     }
                                     break;
                                 }
@@ -631,6 +673,8 @@ public class DataWraper {
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

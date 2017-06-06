@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.*;
@@ -111,6 +112,15 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
     @Atribute(name = "Place", type = "Laba2.Location", Reference = "Place", relation = Relation.OneToOne) //, isRecursiveOnUpdate = true, isRecursiveOnDelete = true)
     @JsonProperty("Place")
     private Location Place;
+
+    @Atribute(name = "Time", type = "bytea", relation = Relation.Primitive)
+    @JsonProperty("Time")
+    private OffsetDateTime time;
+
+    public OffsetDateTime getTime()
+    {
+        return time;
+    }
 
     public Person GetSubjectForSubscribing(){return SubjectForSubscribing;}
 
@@ -216,6 +226,7 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
         this.Place = Place;
         //subscribers = new HashMap<String,Person>();
         subscribers = new HashMap<String,Person>();
+        time = OffsetDateTime.now();
     }
 
     public Person(Leg[] Legs,Location Place,String Name, Boolean IsCame, Boolean IsWait) throws ExceptionWrongName
@@ -246,6 +257,7 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
         subscribers = new HashMap<String,Person>();
         Came = IsCame;
         wait = IsWait;
+        time = OffsetDateTime.now();
     }
 
 
@@ -259,5 +271,6 @@ public abstract class Person  implements Waitable,Subscribable,Comparable, Seria
         Place = new Location();
         //subscribers = new HashMap<String,Person>();
         subscribers = new HashMap<String,Person>();
+        time = OffsetDateTime.now();
     }
 }
